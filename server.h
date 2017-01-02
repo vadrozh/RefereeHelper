@@ -25,6 +25,7 @@
 #include <QShortcut>
 #include <QFileDialog>
 #include <QCloseEvent>
+#include <QTimer>
 namespace Ui {
 class server;
 }
@@ -40,6 +41,7 @@ public:
     QTcpSocket *cli = new QTcpSocket(this);
     QList<QTcpSocket *> clientList;
     QStringList nickList;
+    QStringList ipList;
 public slots:
     void addNewClient();
     void disconnectClient();
@@ -67,9 +69,11 @@ private slots:
     void sendNomination(QString);
     void sendCriteria(QStringList);
     void sendMembers(QStringList);
-    void AddNomination(QString nomination, QStringList members);
+    void AddNomination(QString nomination);
     void OpenConfigFile();
     void UpdateReferee();
+    void CustomMenu(const QPoint&);
+    void disconnectClientForcibly();
 protected:
     virtual void closeEvent(QCloseEvent *event);
 private:
@@ -90,6 +94,10 @@ private:
     QStringList Criteria;
     QVector<QStringList> Members;
     QString CompetitionName;
+    QPoint globalPos;
+    QMenu *menu = new QMenu(this);
+    QAction *remove = new QAction("Отключить клиента",this);
+    QFile File;
 };
 
 #endif // SERVER_H

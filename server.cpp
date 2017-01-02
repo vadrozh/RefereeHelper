@@ -18,6 +18,7 @@ server::server(QWidget *parent) :
     show();
    // QNetworkRequest request(QUrl("http://ipinfo.io/ip"));
     ui->tabWidget->setTabsClosable(true);
+    ui->listNick->setContextMenuPolicy(Qt::CustomContextMenu);
     QNetworkRequest request(QUrl("http://www.grio.ru/myip.php"));
     QNetworkReply *reply = manager->get(request);
     connect(reply,SIGNAL(finished()),this,SLOT(replyFinished()));
@@ -26,6 +27,7 @@ server::server(QWidget *parent) :
     connect(ui->cbLog,SIGNAL(clicked(bool)),this,SLOT(textChanged()));
     connect(ui->leNick,SIGNAL(editingFinished()),this,SLOT(nickChanged()));
     connect(ui->tabWidget,SIGNAL(tabCloseRequested(int)),this,SLOT(tabCloseRequested(int)));
+    connect(ui->listNick,SIGNAL(customContextMenuRequested(QPoint)),this,SLOT(CustomMenu(QPoint)));
     QIcon ico(QApplication::applicationDirPath()+"/ico.png");
     setWindowIcon(ico);
     ui->leNick->setValidator(valid);
@@ -51,6 +53,45 @@ server::~server()
     delete ui;
 }
 
+void server::disconnectClientForcibly(){
+    int clientNum;
+    QListWidgetItem *selected = ui->listNick->selectedItems().first();
+    for(int i = 0, l = ui->listNick->count(); i < l; i++)
+         {
+             if(ui->listNick->item(i)->text() == selected->text())
+             {
+                 clientNum = ui->listNick->row(selected);
+             }
+         }
+    QTcpSocket* clientdis = (QTcpSocket*)clientList[clientNum];
+    sendToClient(clientdis,QTime::currentTime().toString().toUtf8()+" - [СЕРВЕР]Вы были принудительно отключены.");
+    for (int i=0; i<clientList.size(); i++){
+        if (clientdis == clientList.at(i)){
+            clientList.removeAt(i);
+            foreach (QTcpSocket* client, clientList) {
+                sendToClient(client, QTime::currentTime().toString().toUtf8()+" - [СЕРВЕР]Клиент "+nickList[i]+"("+ipList[i]+")"+" отключён принудительно.");
+            }
+            nickList.removeAt(i);
+            ipList.removeAt(i);
+            QListWidgetItem* item = ui->listNick->takeItem(i);
+            delete item;
+        }
+    }
+    UpdateReferee();
+    clientdis->disconnectFromHost();
+    QTimer::singleShot(2000,clientdis,SLOT(deleteLater()));
+    if (ui->listNick->count() == 0) {
+
+    }
+}
+
+void server::CustomMenu(const QPoint &pos){
+    globalPos = ui->listNick->viewport()->mapToGlobal(pos);
+    connect(remove,SIGNAL(triggered(bool)),this,SLOT(disconnectClientForcibly()));
+    menu->addAction(remove);
+    menu->exec(globalPos);
+}
+
 void server::tabCloseRequested(int index){
     ui->tabWidget->removeTab(index);
 }
@@ -58,7 +99,11 @@ void server::tabCloseRequested(int index){
 void server::nickChanged(){
     if (cli->state() == QTcpSocket::ConnectedState){
     QString nick = "//nick_"+ui->leNick->text();
-    cli->write(nick.toUtf8());
+    if (clientRequested){
+        cli->write(nick.toUtf8().toBase64());
+    } else {
+        cli->write(nick.toUtf8());
+    }
     }
 }
 
@@ -95,7 +140,10 @@ void server::replyFinished(){
             //data.chop(1);
             ui->le_Currentip->setText(data);
         }
-      else ui->textBrowser->append("[СИСТЕМА]Ошибка подключения к серверу определения IP: <br>"+reply->errorString());
+      else {
+          ui->textBrowser->append("[СИСТЕМА]Ошибка подключения к серверу определения внешнего IP: <br>"+reply->errorString());
+          ui->textBrowser->append("Вы подключены к интернету?");
+      }
       reply->deleteLater();
 }
 
@@ -106,6 +154,7 @@ void server::closeEvent(QCloseEvent *event){
     } else {
         cli->write(message.toUtf8());
     }
+    File.close();
     event->accept();
 }
 
@@ -141,17 +190,18 @@ void server::addNewClient()
     connect(clientSocket, SIGNAL(disconnected()), this, SLOT(disconnectClient()));
     connect(clientSocket, SIGNAL(readyRead()), this, SLOT(readFromClient()));
     clientList.append(clientSocket);
-    ui->textBrowser->append(QTime::currentTime().toString().toUtf8()+" - [СЕРВЕР]Новый  клиент подключён.");
-    sendToClient(clientSocket, QTime::currentTime().toString().toUtf8()+" - "+"[СЕРВЕР]Вы подключены.");
     nickList.append("Неизвестно " + QString::number(nickList.size()));
     QString addr = clientSocket->peerAddress().toString();
     if (addr == "::1") {
         addr = "localhost";
-    } else {
+    } else if (addr.startsWith("::ffff:")){
         addr.chop(7);
     }
     ui->listNick->addItem(nickList.last()+" ("+addr+")");
+    ipList << addr;
     UpdateReferee();
+    ui->textBrowser->append(QTime::currentTime().toString().toUtf8()+" - [СЕРВЕР]Новый клиент подключён.");
+    sendToClient(clientSocket, QTime::currentTime().toString().toUtf8()+" - "+"[СЕРВЕР]Вы подключены.");
 }
 
 void server::disconnectClient()
@@ -161,9 +211,10 @@ void server::disconnectClient()
         if (client == clientList.at(i)){
             clientList.removeAt(i);
             foreach (QTcpSocket* client, clientList) {
-                sendToClient(client, QTime::currentTime().toString().toUtf8()+" - [СЕРВЕР]Клиент "+nickList[i]+" отключился.");
+                sendToClient(client, QTime::currentTime().toString().toUtf8()+" - [СЕРВЕР]Клиент "+nickList[i]+"("+ipList[i]+")"+" отключился.");
                 }
             nickList.removeAt(i);
+            ipList.removeAt(i);
             QListWidgetItem* item = ui->listNick->takeItem(i);
             delete item;
         }
@@ -183,17 +234,21 @@ void server::readFromClient()
         message = clientSocket->readAll();
         }
     }
- /*   if (message.startsWith("//data")) {
-        QString mes = message.chop(6);
-        QStringList list = mes.split("");
+    if (message.startsWith("//data ")) {
+        QString datames = message.mid(7);
+        QStringList list = datames.split(" ");
+        QString numofTab = list.at(0);
         QList<QTableWidget *> tableList = ui->tabWidget->findChildren<QTableWidget *>();
         foreach (QTableWidget *Table, tableList) {
-            if (Table->objectName() == ("Table_" + QString::number(ui->tabWidget->count()))){
-                Table->setRowCount(members.size());
-                Table->setVerticalHeaderLabels(members);
+            if (Table->objectName() == "Table_" + numofTab){
+                QTableWidgetItem *itab = new QTableWidgetItem();
+                QString result = list.at(2);
+                QString membercount = list.at(1);
+                itab->setText(result);
+                Table->setItem(membercount.toInt(),clientList.indexOf(clientSocket),itab);
             }
         }
-    }*/
+    }
     if (message.startsWith("//nick_") && message.mid(7) != ""){
         QString mes = message.mid(7);
         nickList[clientList.indexOf(clientSocket)] = mes;
@@ -247,6 +302,7 @@ void server::readFromServer()
         ui->textBrowser->append(message);
         trayIcon->showMessage("Новое сообщение",message,QSystemTrayIcon::Information,1000);
         }
+        QApplication::alert(this);
     }
 }
 
@@ -349,7 +405,7 @@ void server::changeEvent(QEvent *event)
     }
 }
 
-void server::AddNomination(QString nomination, QStringList members){
+void server::AddNomination(QString nomination){
     //Номинация
     QWidget *page = new QWidget();
     QTableWidget *NomTab = new QTableWidget();
@@ -362,6 +418,7 @@ void server::AddNomination(QString nomination, QStringList members){
     //Устанавливаем список судей
     UpdateReferee();
     //Участники
+    QStringList members = Members[ui->tabWidget->count()-1];
     QList<QTableWidget *> tableList = ui->tabWidget->findChildren<QTableWidget *>();
     tableList = ui->tabWidget->findChildren<QTableWidget *>();
     foreach (QTableWidget *Table, tableList) {
@@ -370,7 +427,6 @@ void server::AddNomination(QString nomination, QStringList members){
             Table->setVerticalHeaderLabels(members);
         }
     }
-    sendMembers(members);
 }
 
 void server::sendNomination(QString nomination){
@@ -404,13 +460,17 @@ void server::sendMembers(QStringList members){
 
 
 void server::OpenConfigFile(){
+    Nominations.clear();
+    Criteria.clear();
+    Members.clear();
+    CompetitionName.clear();
     ui->tabWidget->clear();
     TableCreated = false;
     QString FileName = QFileDialog::getOpenFileName(this,
                                 QString::fromUtf8("Открыть файл соревнования"),
                                 QDir::currentPath(),
                                 "Text files (*.txt)");
-    QFile File(FileName);
+    File.setFileName(FileName);
     if (File.exists() && File.open(QIODevice::ReadOnly)){
         QString tempString;
         tempString.clear();
@@ -453,10 +513,6 @@ void server::OpenConfigFile(){
                     tempString = QString(File.readLine().simplified());
                     // Список участников для данной номинации
                     while(tempString != "[/members]"){
-                       /* QString isNomination;
-                        foreach (QString str, Nominations) {
-                            isNomination += " "+str;
-                        }*/
                         if (tempString.isEmpty() || tempString ==   "[category]"){
                             tempString = QString(File.readLine().simplified());
                             startIndex = true;
@@ -475,19 +531,23 @@ void server::OpenConfigFile(){
             }
         }
     }
-    File.close();
-    for (int i = 0; i < Nominations.size(); ++i) {
-        sendNomination(Nominations[i]);
-        AddNomination(Nominations[i],Members[i]);
+    if (File.exists()){
+        for (int i = 0; i < Nominations.size(); ++i) {
+            AddNomination(Nominations[i]);
+            sendNomination(Nominations[i]);
+            sendMembers(Members[i]);
+        }
+        sendCriteria(Criteria);
+        TableCreated = true;
     }
-    sendCriteria(Criteria);
-    TableCreated = true;
 }
 
 void server::UpdateReferee(){
     QList<QTableWidget *> tableList = ui->tabWidget->findChildren<QTableWidget *>();
     foreach (QTableWidget *Table, tableList) {
-            Table->setColumnCount(nickList.size());
-            Table->setHorizontalHeaderLabels(nickList);
+            QStringList referee = nickList;
+            referee.removeFirst();
+            Table->setColumnCount(referee.size());
+            Table->setHorizontalHeaderLabels(referee);
     }
 }
