@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1024</width>
-    <height>700</height>
+    <width>496</width>
+    <height>460</height>
    </rect>
   </property>
   <property name="sizePolicy">
@@ -16,17 +16,38 @@
     <verstretch>0</verstretch>
    </sizepolicy>
   </property>
+  <property name="minimumSize">
+   <size>
+    <width>496</width>
+    <height>460</height>
+   </size>
+  </property>
+  <property name="maximumSize">
+   <size>
+    <width>496</width>
+    <height>460</height>
+   </size>
+  </property>
   <property name="windowTitle">
    <string>Referee Helper</string>
   </property>
+  <property name="styleSheet">
+   <string notr="true"/>
+  </property>
   <widget class="QWidget" name="centralwidget">
+   <property name="sizePolicy">
+    <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+     <horstretch>0</horstretch>
+     <verstretch>0</verstretch>
+    </sizepolicy>
+   </property>
    <widget class="QTextBrowser" name="textBrowser">
     <property name="geometry">
      <rect>
-      <x>460</x>
-      <y>10</y>
-      <width>561</width>
-      <height>221</height>
+      <x>10</x>
+      <y>190</y>
+      <width>481</width>
+      <height>231</height>
      </rect>
     </property>
     <property name="html">
@@ -34,7 +55,9 @@
 &lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
 p, li { white-space: pre-wrap; }
 &lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:'MS Shell Dlg 2'; font-size:8.25pt; font-weight:400; font-style:normal;&quot;&gt;
-&lt;p style=&quot;-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;br /&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;                                       RefereeHelper(Server) v0.9(Stable)&lt;/span&gt;&lt;/p&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;                   by vadrozh(vk.com/rozzhk) &amp;amp; ejik(vk.com/av.kochekov)&lt;/span&gt;&lt;/p&gt;
+&lt;p style=&quot;-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px; font-weight:600;&quot;&gt;&lt;br /&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
     </property>
     <property name="placeholderText">
      <string/>
@@ -45,9 +68,12 @@ p, li { white-space: pre-wrap; }
      <rect>
       <x>10</x>
       <y>10</y>
-      <width>441</width>
-      <height>231</height>
+      <width>481</width>
+      <height>171</height>
      </rect>
+    </property>
+    <property name="styleSheet">
+     <string notr="true"/>
     </property>
     <property name="title">
      <string>Параметры подключения</string>
@@ -55,8 +81,8 @@ p, li { white-space: pre-wrap; }
     <widget class="QLabel" name="label_6">
      <property name="geometry">
       <rect>
-       <x>10</x>
-       <y>150</y>
+       <x>20</x>
+       <y>80</y>
        <width>31</width>
        <height>20</height>
       </rect>
@@ -65,50 +91,11 @@ p, li { white-space: pre-wrap; }
       <string>Порт</string>
      </property>
     </widget>
-    <widget class="QLabel" name="label_4">
-     <property name="geometry">
-      <rect>
-       <x>70</x>
-       <y>20</y>
-       <width>131</width>
-       <height>16</height>
-      </rect>
-     </property>
-     <property name="text">
-      <string>Подключение к серверу</string>
-     </property>
-    </widget>
-    <widget class="QLabel" name="label_2">
-     <property name="geometry">
-      <rect>
-       <x>10</x>
-       <y>60</y>
-       <width>41</width>
-       <height>21</height>
-      </rect>
-     </property>
-     <property name="text">
-      <string>Порт</string>
-     </property>
-    </widget>
-    <widget class="QLineEdit" name="lePort">
-     <property name="geometry">
-      <rect>
-       <x>90</x>
-       <y>60</y>
-       <width>91</width>
-       <height>20</height>
-      </rect>
-     </property>
-     <property name="text">
-      <string>20333</string>
-     </property>
-    </widget>
     <widget class="QLineEdit" name="le_Currentip">
      <property name="geometry">
       <rect>
-       <x>90</x>
-       <y>130</y>
+       <x>100</x>
+       <y>60</y>
        <width>91</width>
        <height>20</height>
       </rect>
@@ -120,50 +107,25 @@ p, li { white-space: pre-wrap; }
       <bool>true</bool>
      </property>
     </widget>
-    <widget class="QPushButton" name="pbServer">
-     <property name="geometry">
-      <rect>
-       <x>180</x>
-       <y>40</y>
-       <width>91</width>
-       <height>41</height>
-      </rect>
-     </property>
-     <property name="text">
-      <string>Подключение</string>
-     </property>
-    </widget>
     <widget class="QPushButton" name="pbServer_create">
      <property name="geometry">
       <rect>
-       <x>180</x>
-       <y>110</y>
-       <width>91</width>
+       <x>190</x>
+       <y>40</y>
+       <width>81</width>
        <height>61</height>
       </rect>
      </property>
      <property name="text">
-      <string>Создать сервер</string>
-     </property>
-    </widget>
-    <widget class="QLineEdit" name="le_ip">
-     <property name="geometry">
-      <rect>
-       <x>90</x>
-       <y>40</y>
-       <width>91</width>
-       <height>20</height>
-      </rect>
-     </property>
-     <property name="text">
-      <string>localhost</string>
+      <string>Запуск
+сервера</string>
      </property>
     </widget>
     <widget class="QLabel" name="label_5">
      <property name="geometry">
       <rect>
-       <x>10</x>
-       <y>130</y>
+       <x>20</x>
+       <y>60</y>
        <width>41</width>
        <height>21</height>
       </rect>
@@ -175,8 +137,8 @@ p, li { white-space: pre-wrap; }
     <widget class="QLineEdit" name="lePort_create">
      <property name="geometry">
       <rect>
-       <x>90</x>
-       <y>150</y>
+       <x>100</x>
+       <y>80</y>
        <width>91</width>
        <height>20</height>
       </rect>
@@ -188,40 +150,30 @@ p, li { white-space: pre-wrap; }
     <widget class="QLabel" name="label_3">
      <property name="geometry">
       <rect>
-       <x>90</x>
-       <y>90</y>
-       <width>91</width>
+       <x>100</x>
+       <y>20</y>
+       <width>111</width>
        <height>16</height>
       </rect>
      </property>
      <property name="text">
-      <string>Создать сервер</string>
-     </property>
-    </widget>
-    <widget class="QLabel" name="label">
-     <property name="geometry">
-      <rect>
-       <x>10</x>
-       <y>40</y>
-       <width>61</width>
-       <height>21</height>
-      </rect>
-     </property>
-     <property name="text">
-      <string>IP сервера</string>
+      <string>Запуск сервера</string>
      </property>
     </widget>
     <widget class="QCheckBox" name="cbEnc">
+     <property name="enabled">
+      <bool>false</bool>
+     </property>
      <property name="geometry">
       <rect>
-       <x>10</x>
-       <y>200</y>
+       <x>30</x>
+       <y>140</y>
        <width>281</width>
        <height>21</height>
       </rect>
      </property>
      <property name="text">
-      <string>Включить шифрование(не работает с таблицами)</string>
+      <string>Включить шифрование(пока-что не работает)</string>
      </property>
      <property name="tristate">
       <bool>false</bool>
@@ -230,8 +182,8 @@ p, li { white-space: pre-wrap; }
     <widget class="QCheckBox" name="cbLog">
      <property name="geometry">
       <rect>
-       <x>10</x>
-       <y>180</y>
+       <x>30</x>
+       <y>120</y>
        <width>131</width>
        <height>21</height>
       </rect>
@@ -243,19 +195,19 @@ p, li { white-space: pre-wrap; }
     <widget class="QListWidget" name="listNick">
      <property name="geometry">
       <rect>
-       <x>290</x>
-       <y>41</y>
-       <width>141</width>
-       <height>181</height>
+       <x>300</x>
+       <y>30</y>
+       <width>171</width>
+       <height>131</height>
       </rect>
      </property>
     </widget>
     <widget class="QLabel" name="label_7">
      <property name="geometry">
       <rect>
-       <x>290</x>
-       <y>20</y>
-       <width>151</width>
+       <x>300</x>
+       <y>10</y>
+       <width>171</width>
        <height>16</height>
       </rect>
      </property>
@@ -266,8 +218,8 @@ p, li { white-space: pre-wrap; }
     <widget class="QLabel" name="label_IP">
      <property name="geometry">
       <rect>
-       <x>10</x>
-       <y>110</y>
+       <x>20</x>
+       <y>40</y>
        <width>81</width>
        <height>16</height>
       </rect>
@@ -279,8 +231,8 @@ p, li { white-space: pre-wrap; }
     <widget class="QLineEdit" name="le_locIP">
      <property name="geometry">
       <rect>
-       <x>90</x>
-       <y>110</y>
+       <x>100</x>
+       <y>40</y>
        <width>91</width>
        <height>21</height>
       </rect>
@@ -293,25 +245,12 @@ p, li { white-space: pre-wrap; }
      </property>
     </widget>
    </widget>
-   <widget class="QTabWidget" name="tabWidget">
-    <property name="geometry">
-     <rect>
-      <x>10</x>
-      <y>250</y>
-      <width>1001</width>
-      <height>441</height>
-     </rect>
-    </property>
-    <property name="currentIndex">
-     <number>-1</number>
-    </property>
-   </widget>
    <widget class="QPushButton" name="pbSend">
     <property name="geometry">
      <rect>
-      <x>950</x>
-      <y>230</y>
-      <width>71</width>
+      <x>400</x>
+      <y>430</y>
+      <width>91</width>
       <height>21</height>
      </rect>
     </property>
@@ -322,11 +261,14 @@ p, li { white-space: pre-wrap; }
    <widget class="QLineEdit" name="leNick">
     <property name="geometry">
      <rect>
-      <x>460</x>
-      <y>230</y>
-      <width>101</width>
-      <height>20</height>
+      <x>10</x>
+      <y>430</y>
+      <width>81</width>
+      <height>21</height>
      </rect>
+    </property>
+    <property name="text">
+     <string/>
     </property>
     <property name="maxLength">
      <number>32</number>
@@ -338,11 +280,14 @@ p, li { white-space: pre-wrap; }
    <widget class="QLineEdit" name="leMessage">
     <property name="geometry">
      <rect>
-      <x>560</x>
-      <y>230</y>
-      <width>381</width>
-      <height>20</height>
+      <x>90</x>
+      <y>430</y>
+      <width>311</width>
+      <height>21</height>
      </rect>
+    </property>
+    <property name="text">
+     <string/>
     </property>
     <property name="maxLength">
      <number>255</number>

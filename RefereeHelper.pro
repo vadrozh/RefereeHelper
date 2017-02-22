@@ -30,3 +30,6 @@ SOURCES += main.cpp\
 HEADERS  += server.h
 
 FORMS    += server.ui
+
+RESOURCES += \
+    res.qrc
